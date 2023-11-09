@@ -15,7 +15,7 @@ led.value(True) #LED is turned on to indicate that the system is running
 
 #notify slave
 trigger_pin = machine.Pin(14, machine.Pin.OUT)
-fakesignal = machine.Pin(15, machine.Pin.OUT) 
+dds_trigger = machine.Pin(15, machine.Pin.OUT) 
 
 
 #set constant
@@ -24,16 +24,10 @@ speed_of_sound_75f = 1480
 #function to send square wave
 def trigger_slave():
     trigger_pin(0)
+    dds_trigger(0)
     utime.sleep_ms(10)
     trigger_pin(1)
-    utime.sleep_ms(50)
-
-    fakesignal(0)
-    utime.sleep_ms(10)
-    fakesignal(1)
-    utime.sleep_ms(10)
-    fakesignal(0)
-
+    dds_trigger(1)
 
 
 #input data and calc distance
@@ -46,8 +40,8 @@ def uart_interrupt(interrupt_pin):
     val = val % (10^4)
     print(val)
     distance = speed_of_sound_75f * val / 2
-    print("Distance:", distance)
-
+    print("Distance: {:.2f}".format(distance))
+    
 #when slave is ready to send data
 interrupt_pin = Pin(16, Pin.IN, Pin.PULL_UP)   
 interrupt_pin.irq(handler=uart_interrupt, trigger=Pin.IRQ_FALLING) #interrupt routine
